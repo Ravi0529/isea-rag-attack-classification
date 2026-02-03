@@ -9,6 +9,14 @@ from src.ingest.write_parquet import write_events_to_parquet
 from src.features.enrich import enrich_events
 from src.features.sessionize import SessionConfig, build_sessions, write_session_outputs
 
+from src.detection.rules import apply_rules
+from src.detection.embedding_anomaly import (
+    embed_sessions,
+    isolation_forest_scores,
+    lof_scores,
+)
+from src.detection.score import combine_scores
+
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -36,6 +44,26 @@ def sessionize(
         df, SessionConfig(gap_seconds=gap_seconds, min_events=min_events)
     )
     write_session_outputs(sessions_df, events_df, out_dir=out_dir)
+
+
+@app.command()
+def detect(
+    sessions_path: str = typer.Option(default="data/processed/sessions.parquet"),
+    out_path: str = typer.Option(default="data/processed/sessions_scored.parquet"),
+    embed_model: str = typer.Option(default="BAAI/bge-small-en-v1.5"),
+    use_lof: bool = typer.Option(default=False),
+    device: str = typer.Option(default="auto"),
+):
+    s = pd.read_parquet(sessions_path)
+    s = apply_rules(s)
+
+    X = embed_sessions(s, model_name=embed_model, device=device)
+    s["ml_score"] = lof_scores(X) if use_lof else isolation_forest_scores(X)
+
+    s = combine_scores(s)
+    s.to_parquet(out_path, index=False)
+    print(f"✅ wrote scored sessions -> {out_path}")
+    print(s["label"].value_counts().to_string())
 
 
 app()
