@@ -17,6 +17,9 @@ from src.detection.embedding_anomaly import (
 )
 from src.detection.score import combine_scores
 
+from src.mitre.download_attack import download_enterprise_attack
+from src.mitre.stix_cache import build_attack_cache
+
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -64,6 +67,21 @@ def detect(
     s.to_parquet(out_path, index=False)
     print(f"✅ wrote scored sessions -> {out_path}")
     print(s["label"].value_counts().to_string())
+
+
+@app.command()
+def attack_download(
+    out_path: str = typer.Option(default="data/attack/raw/enterprise-attack.json"),
+):
+    download_enterprise_attack(out_path)
+
+
+@app.command()
+def attack_cache(
+    stix_path: str = typer.Option(default="data/attack/raw/enterprise-attack.json"),
+    out_dir: str = typer.Option(default="data/attack"),
+):
+    build_attack_cache(stix_path, out_dir)
 
 
 app()
