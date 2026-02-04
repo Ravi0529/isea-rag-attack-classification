@@ -15,7 +15,7 @@ def apply_rules(sessions: pd.DataFrame) -> pd.DataFrame:
 
     # tool-based
     add_reason(
-        s["tool"].isin(["gobuster", "dirbuster"]), 0.65, "tool_fingerprint:dir_enum"
+        s["tool"].isin(["gobuster", "dirbuster"]), 0.85, "tool_fingerprint:dir_enum"
     )
     add_reason(
         s["tool"].isin(["go-http-client", "python-requests", "curl", "wget"]),

@@ -53,7 +53,8 @@ def sessionize(
 def detect(
     sessions_path: str = typer.Option(default="data/processed/sessions.parquet"),
     out_path: str = typer.Option(default="data/processed/sessions_scored.parquet"),
-    embed_model: str = typer.Option(default="BAAI/bge-small-en-v1.5"),
+    # embed_model: str = typer.Option(default="BAAI/bge-small-en-v1.5"),
+    embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
     use_lof: bool = typer.Option(default=False),
     device: str = typer.Option(default="auto"),
 ):
