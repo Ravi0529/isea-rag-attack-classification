@@ -20,6 +20,10 @@ from src.detection.score import combine_scores
 from src.mitre.download_attack import download_enterprise_attack
 from src.mitre.stix_cache import build_attack_cache
 
+from src.rag.index_attack import index_mitre_attack
+from src.rag.index_sessions import index_log_sessions
+from src.rag.retrieve import search_attack_for_text
+
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -53,7 +57,6 @@ def sessionize(
 def detect(
     sessions_path: str = typer.Option(default="data/processed/sessions.parquet"),
     out_path: str = typer.Option(default="data/processed/sessions_scored.parquet"),
-    # embed_model: str = typer.Option(default="BAAI/bge-small-en-v1.5"),
     embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
     use_lof: bool = typer.Option(default=False),
     device: str = typer.Option(default="auto"),
@@ -83,6 +86,47 @@ def attack_cache(
     out_dir: str = typer.Option(default="data/attack"),
 ):
     build_attack_cache(stix_path, out_dir)
+
+
+@app.command()
+def qdrant_index_attack(
+    cache_path: str = typer.Option(default="data/attack/attack_stix_cache.json"),
+    embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
+    device: str = typer.Option(default="auto"),
+):
+    index_mitre_attack(cache_path=cache_path, embed_model=embed_model, device=device)
+
+
+@app.command()
+def qdrant_index_sessions(
+    scored_sessions_path: str = typer.Option(
+        default="data/processed/sessions_scored.parquet"
+    ),
+    embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
+    device: str = typer.Option(default="auto"),
+):
+    index_log_sessions(
+        scored_sessions_path=scored_sessions_path,
+        embed_model=embed_model,
+        device=device,
+    )
+
+
+@app.command()
+def rag_attack_search(
+    q: str = typer.Option(...),
+    top_k: int = typer.Option(default=8),
+    embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
+    device: str = typer.Option(default="auto"),
+):
+    hits = search_attack_for_text(
+        q, top_k=top_k, embed_model=embed_model, device=device
+    )
+    for h in hits:
+        p = h.payload
+        print(
+            f"{h.score:.3f}  {p.get('technique_id')}  {p.get('name')}  tactics={p.get('tactics')}"
+        )
 
 
 app()
