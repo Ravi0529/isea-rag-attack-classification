@@ -2,6 +2,7 @@ from __future__ import annotations
 import os
 import typer
 import pandas as pd
+from typing import Optional
 
 from src.ingest.parser import iter_events
 from src.ingest.write_parquet import write_events_to_parquet
@@ -23,6 +24,8 @@ from src.mitre.stix_cache import build_attack_cache
 from src.rag.index_attack import index_mitre_attack
 from src.rag.index_sessions import index_log_sessions
 from src.rag.retrieve import search_attack_for_text
+
+from src.mapping.map_sessions import map_sessions
 
 app = typer.Typer(no_args_is_help=True)
 
@@ -127,6 +130,39 @@ def rag_attack_search(
         print(
             f"{h.score:.3f}  {p.get('technique_id')}  {p.get('name')}  tactics={p.get('tactics')}"
         )
+
+
+@app.command("map-techniques")
+def map_techniques(
+    sessions_path: str = typer.Option(..., help="Path to sessions_scored.parquet"),
+    out_path: str = typer.Option(..., help="Output parquet path for mapping results"),
+    top_k: int = typer.Option(
+        20, help="How many ATT&CK candidates to retrieve per session"
+    ),
+    keep_top_n: int = typer.Option(3, help="How many techniques to keep per session"),
+    embed_model: str = typer.Option(
+        "sentence-transformers/all-mpnet-base-v2",
+        help="Embedding model (must match Qdrant dims)",
+    ),
+    device: str = typer.Option("auto", help="cpu/cuda/auto"),
+    limit: Optional[int] = typer.Option(
+        None, help="Process only first N sessions (debug/demo)"
+    ),
+):
+    """
+    Map suspicious sessions -> MITRE ATT&CK techniques (explainable).
+    Writes: session_attack_mapping.parquet
+    """
+    map_sessions(
+        sessions_path=sessions_path,
+        out_path=out_path,
+        top_k=top_k,
+        embed_model=embed_model,
+        device=device,
+        keep_top_n=keep_top_n,
+        limit=limit,
+    )
+    print(f"✅ wrote mapping -> {out_path}")
 
 
 app()
