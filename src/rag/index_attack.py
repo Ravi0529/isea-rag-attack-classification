@@ -19,7 +19,7 @@ def _tech_to_text(t: dict, mitigations: list[dict]) -> str:
 def index_mitre_attack(
     cache_path: str = "data/attack/attack_stix_cache.json",
     collection: str = "mitre_attack",
-    embed_model: str = "sentence-transformers/all-mpnet-base-v2",
+    embed_model: str = "sentence-transformers/all-roberta-large-v1",
     device: str = "auto",
     batch_size: int = 128,
 ) -> None:

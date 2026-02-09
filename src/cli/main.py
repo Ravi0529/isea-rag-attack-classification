@@ -61,7 +61,9 @@ def sessionize(
 def detect(
     sessions_path: str = typer.Option(default="data/processed/sessions.parquet"),
     out_path: str = typer.Option(default="data/processed/sessions_scored.parquet"),
-    embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
+    embed_model: str = typer.Option(
+        default="sentence-transformers/all-roberta-large-v1"
+    ),
     use_lof: bool = typer.Option(default=False),
     device: str = typer.Option(default="auto"),
 ):
@@ -95,7 +97,9 @@ def attack_cache(
 @app.command()
 def qdrant_index_attack(
     cache_path: str = typer.Option(default="data/attack/attack_stix_cache.json"),
-    embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
+    embed_model: str = typer.Option(
+        default="sentence-transformers/all-roberta-large-v1"
+    ),
     device: str = typer.Option(default="auto"),
 ):
     index_mitre_attack(cache_path=cache_path, embed_model=embed_model, device=device)
@@ -106,7 +110,9 @@ def qdrant_index_sessions(
     scored_sessions_path: str = typer.Option(
         default="data/processed/sessions_scored.parquet"
     ),
-    embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
+    embed_model: str = typer.Option(
+        default="sentence-transformers/all-roberta-large-v1"
+    ),
     device: str = typer.Option(default="auto"),
 ):
     index_log_sessions(
@@ -120,7 +126,9 @@ def qdrant_index_sessions(
 def rag_attack_search(
     q: str = typer.Option(...),
     top_k: int = typer.Option(default=8),
-    embed_model: str = typer.Option(default="sentence-transformers/all-mpnet-base-v2"),
+    embed_model: str = typer.Option(
+        default="sentence-transformers/all-roberta-large-v1"
+    ),
     device: str = typer.Option(default="auto"),
 ):
     hits = search_attack_for_text(
@@ -142,7 +150,7 @@ def map_techniques(
     ),
     keep_top_n: int = typer.Option(3, help="How many techniques to keep per session"),
     embed_model: str = typer.Option(
-        "sentence-transformers/all-mpnet-base-v2",
+        "sentence-transformers/all-roberta-large-v1",
         help="Embedding model (must match Qdrant dims)",
     ),
     device: str = typer.Option("auto", help="cpu/cuda/auto"),

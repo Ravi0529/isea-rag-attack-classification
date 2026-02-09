@@ -24,7 +24,7 @@ def _session_summary(r: pd.Series) -> str:
 def index_log_sessions(
     scored_sessions_path: str = "data/processed/sessions_scored.parquet",
     collection: str = "log_sessions",
-    embed_model: str = "sentence-transformers/all-mpnet-base-v2",
+    embed_model: str = "sentence-transformers/all-roberta-large-v1",
     device: str = "auto",
     batch_size: int = 256,
 ) -> None:

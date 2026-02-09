@@ -21,27 +21,59 @@ def _session_to_text(s: pd.DataFrame) -> list[str]:
     return texts
 
 
-def _resolve_device(device: str) -> str:
+def _resolve_device(device: str = "auto") -> str:
     if device != "auto":
         return device
-    return "cuda" if torch.cuda.is_available() else "cpu"
+
+    if torch.cuda.is_available():
+        try:
+            # sanity check that CUDA is actually usable
+            _ = torch.zeros(1).cuda()
+            return "cuda"
+        except Exception as e:
+            print(f"⚠️ CUDA available but unusable → CPU fallback ({e})")
+
+    return "cpu"
 
 
 def embed_sessions(
-    sessions: pd.DataFrame, model_name: str, device: str = "auto"
+    sessions: pd.DataFrame,
+    model_name: str,
+    device: str = "auto",
 ) -> np.ndarray:
     resolved_device = _resolve_device(device)
-    print(f"🔧 Using device: {resolved_device}")
+    print(f"🔧 Embedding device selected: {resolved_device}")
 
-    model = SentenceTransformer(model_name, device=resolved_device)
     texts = _session_to_text(sessions)
 
-    emb = model.encode(
-        texts,
-        batch_size=256,
-        show_progress_bar=True,
-        normalize_embeddings=True,
-    )
+    try:
+        model = SentenceTransformer(model_name, device=resolved_device)
+    except Exception as e:
+        print(f"❌ Failed to load model on {resolved_device}: {e}")
+        print("🔄 Falling back to CPU")
+        model = SentenceTransformer(model_name, device="cpu")
+
+    try:
+        emb = model.encode(
+            texts,
+            batch_size=256,
+            show_progress_bar=True,
+            normalize_embeddings=True,
+        )
+    except RuntimeError as e:
+        if "CUDA out of memory" in str(e):
+            print("⚠️ CUDA OOM → retrying on CPU with smaller batch")
+            torch.cuda.empty_cache()
+            model.to("cpu")
+            emb = model.encode(
+                texts,
+                batch_size=64,
+                show_progress_bar=True,
+                normalize_embeddings=True,
+            )
+        else:
+            raise
+
     return np.asarray(emb, dtype=np.float32)
 
 

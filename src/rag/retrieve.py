@@ -9,7 +9,7 @@ from src.rag.embeddings import load_embedder, embed_texts
 def search_attack_for_text(
     query_text: str,
     top_k: int = 10,
-    embed_model: str = "sentence-transformers/all-mpnet-base-v2",
+    embed_model: str = "sentence-transformers/all-roberta-large-v1",
     device: str = "auto",
 ):
     model = load_embedder(embed_model, device=device)
@@ -31,7 +31,7 @@ def search_sessions(
     top_k: int = 10,
     label: str | None = None,
     tool: str | None = None,
-    embed_model: str = "sentence-transformers/all-mpnet-base-v2",
+    embed_model: str = "sentence-transformers/all-roberta-large-v1",
     device: str = "auto",
 ):
     model = load_embedder(embed_model, device=device)
