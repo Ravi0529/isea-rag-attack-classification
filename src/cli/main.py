@@ -26,6 +26,7 @@ from src.rag.index_sessions import index_log_sessions
 from src.rag.retrieve import search_attack_for_text
 
 from src.mapping.map_sessions import map_sessions
+from src.eval.run_eval import create_eval_templates, run_eval
 
 app = typer.Typer(no_args_is_help=True)
 
@@ -163,6 +164,74 @@ def map_techniques(
         limit=limit,
     )
     print(f"✅ wrote mapping -> {out_path}")
+
+
+@app.command("eval-templates")
+def eval_templates(
+    sessions_scored_path: str = typer.Option(
+        default="data/processed/sessions_scored.parquet"
+    ),
+    session_mapping_path: str = typer.Option(
+        default="data/processed/session_attack_mapping.parquet"
+    ),
+    out_dir: str = typer.Option(default="data/labels"),
+    sample_rows: int = typer.Option(default=1000),
+):
+    out = create_eval_templates(
+        sessions_scored_path=sessions_scored_path,
+        session_mapping_path=session_mapping_path,
+        out_dir=out_dir,
+        sample_rows=sample_rows,
+    )
+    print(f"wrote detection labels template -> {out['detection_labels']}")
+    print(f"wrote mapping labels template -> {out['mapping_labels']}")
+
+
+@app.command("eval")
+def eval_phase8(
+    sessions_scored_path: str = typer.Option(
+        default="data/processed/sessions_scored.parquet"
+    ),
+    session_mapping_path: str = typer.Option(
+        default="data/processed/session_attack_mapping.parquet"
+    ),
+    attack_cache_path: str = typer.Option(default="data/attack/attack_stix_cache.json"),
+    out_json_path: str = typer.Option(default="reports/metrics.json"),
+    figures_dir: str = typer.Option(default="reports/figures"),
+    mode: str = typer.Option(default="proxy", help="proxy or labeled"),
+    detection_labels_path: Optional[str] = typer.Option(default=None),
+    mapping_labels_path: Optional[str] = typer.Option(default=None),
+    retrieval_k: int = typer.Option(default=10),
+):
+    report = run_eval(
+        sessions_scored_path=sessions_scored_path,
+        session_mapping_path=session_mapping_path,
+        attack_cache_path=attack_cache_path,
+        out_json_path=out_json_path,
+        figures_dir=figures_dir,
+        mode=mode,
+        detection_labels_path=detection_labels_path,
+        mapping_labels_path=mapping_labels_path,
+        retrieval_k=retrieval_k,
+    )
+    print(f"wrote metrics -> {out_json_path}")
+    print(
+        f"mode={report['mode']} detection_macro_f1={report['detection']['macro_f1']:.4f} "
+        f"detection_weighted_f1={report['detection']['weighted_f1']:.4f}"
+    )
+    if report["mapping"]["mode"] == "labeled":
+        print(
+            f"mapping_top1={report['mapping']['top1_accuracy']:.4f} "
+            f"mapping_top3={report['mapping']['top3_accuracy']:.4f} "
+            f"recall@{report['mapping']['retrieval_recall_at_k']['k']}="
+            f"{report['mapping']['retrieval_recall_at_k']['value']:.4f}"
+        )
+    else:
+        print(
+            f"mapping_tactic_top1={report['mapping']['tactic_alignment_top1']:.4f} "
+            f"mapping_tactic_top3={report['mapping']['tactic_alignment_top3']:.4f} "
+            f"avg_conf={report['mapping']['avg_confidence']:.4f}"
+        )
 
 
 app()

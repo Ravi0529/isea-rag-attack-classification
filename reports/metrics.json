@@ -1,0 +1,74 @@
+{
+  "generated_at_utc": "2026-02-08T13:54:31.365497+00:00",
+  "mode": "proxy",
+  "inputs": {
+    "sessions_scored_path": "data/processed/sessions_scored.parquet",
+    "session_mapping_path": "data/processed/session_attack_mapping.parquet",
+    "attack_cache_path": "data/attack/attack_stix_cache.json",
+    "detection_labels_path": null,
+    "mapping_labels_path": null,
+    "retrieval_k": 10
+  },
+  "detection": {
+    "label_order": [
+      "benign",
+      "suspicious",
+      "attack_like"
+    ],
+    "confusion_matrix": [
+      [
+        810,
+        0,
+        0
+      ],
+      [
+        262,
+        6716,
+        56
+      ],
+      [
+        0,
+        2106,
+        915
+      ]
+    ],
+    "macro_f1": 0.7221091160567793,
+    "weighted_f1": 0.740063071863536,
+    "per_class": {
+      "benign": {
+        "precision": 0.7555970149253731,
+        "recall": 1.0,
+        "f1": 0.8607863974495218,
+        "support": 810
+      },
+      "suspicious": {
+        "precision": 0.7612786216277488,
+        "recall": 0.9547910150696617,
+        "f1": 0.8471241170534813,
+        "support": 7034
+      },
+      "attack_like": {
+        "precision": 0.9423274974253347,
+        "recall": 0.3028798411122145,
+        "f1": 0.45841683366733466,
+        "support": 3021
+      }
+    },
+    "mode": "proxy",
+    "n_evaluated": 10865,
+    "coverage_vs_sessions": 0.8981565677440688,
+    "notes": "Proxy labels are heuristic and not ground truth."
+  },
+  "mapping": {
+    "mode": "proxy",
+    "n_evaluated": 10333,
+    "tactic_alignment_top1": 0.03154940481951031,
+    "tactic_alignment_top3": 0.10374528210587439,
+    "avg_confidence": 0.46453247508452805,
+    "notes": "Proxy mapping metrics are heuristic alignment, not true technique accuracy."
+  },
+  "artifacts": {
+    "detection_confusion_matrix": "reports/figures\\detection_confusion_matrix.png",
+    "mapping_scores_plot": "reports/figures\\mapping_proxy_metrics.png"
+  }
+}
