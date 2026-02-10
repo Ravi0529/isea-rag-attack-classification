@@ -3,6 +3,9 @@ import os
 import typer
 import pandas as pd
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from src.ingest.parser import iter_events
 from src.ingest.write_parquet import write_events_to_parquet
