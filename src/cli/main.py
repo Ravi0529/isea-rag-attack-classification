@@ -3,6 +3,9 @@ import os
 import typer
 import pandas as pd
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from src.ingest.parser import iter_events
 from src.ingest.write_parquet import write_events_to_parquet
@@ -61,9 +64,7 @@ def sessionize(
 def detect(
     sessions_path: str = typer.Option(default="data/processed/sessions.parquet"),
     out_path: str = typer.Option(default="data/processed/sessions_scored.parquet"),
-    embed_model: str = typer.Option(
-        default="BAAI/bge-base-en-v1.5"
-    ),
+    embed_model: str = typer.Option(default="BAAI/bge-base-en-v1.5"),
     use_lof: bool = typer.Option(default=False),
     device: str = typer.Option(default="auto"),
 ):
@@ -97,9 +98,7 @@ def attack_cache(
 @app.command()
 def qdrant_index_attack(
     cache_path: str = typer.Option(default="data/attack/attack_stix_cache.json"),
-    embed_model: str = typer.Option(
-        default="BAAI/bge-base-en-v1.5"
-    ),
+    embed_model: str = typer.Option(default="BAAI/bge-base-en-v1.5"),
     device: str = typer.Option(default="auto"),
 ):
     index_mitre_attack(cache_path=cache_path, embed_model=embed_model, device=device)
@@ -110,9 +109,7 @@ def qdrant_index_sessions(
     scored_sessions_path: str = typer.Option(
         default="data/processed/sessions_scored.parquet"
     ),
-    embed_model: str = typer.Option(
-        default="BAAI/bge-base-en-v1.5"
-    ),
+    embed_model: str = typer.Option(default="BAAI/bge-base-en-v1.5"),
     device: str = typer.Option(default="auto"),
 ):
     index_log_sessions(
@@ -126,9 +123,7 @@ def qdrant_index_sessions(
 def rag_attack_search(
     q: str = typer.Option(...),
     top_k: int = typer.Option(default=8),
-    embed_model: str = typer.Option(
-        default="BAAI/bge-base-en-v1.5"
-    ),
+    embed_model: str = typer.Option(default="BAAI/bge-base-en-v1.5"),
     device: str = typer.Option(default="auto"),
 ):
     hits = search_attack_for_text(
