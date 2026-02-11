@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-02-10T13:58:47.425904+00:00",
+  "generated_at_utc": "2026-02-11T07:22:41.552779+00:00",
   "mode": "proxy",
   "inputs": {
     "sessions_scored_path": "data/processed/sessions_scored.parquet",
@@ -59,6 +59,19 @@
     "coverage_vs_sessions": 0.8981565677440688,
     "notes": "Proxy labels are heuristic and not ground truth."
   },
+  "confidence": {
+    "similarity_source_column": "confidence",
+    "mean_cosine_similarity": 0.5485931820695761,
+    "median_cosine_similarity": 0.5465804742857142,
+    "std_cosine_similarity": 0.03367255143898023
+  },
+  "utility": {
+    "threshold": 0.7,
+    "n_mapped_sessions": 10333,
+    "n_mapped_sessions_above_threshold": 0,
+    "pct_mapped_sessions_above_threshold": 0.0,
+    "mapping_coverage_vs_scored_sessions": 0.8541787219971894
+  },
   "mapping": {
     "mode": "proxy",
     "n_evaluated": 10333,
@@ -69,6 +82,8 @@
   },
   "artifacts": {
     "detection_confusion_matrix": "reports/figures\\detection_confusion_matrix.png",
-    "mapping_scores_plot": "reports/figures\\mapping_proxy_metrics.png"
+    "mapping_scores_plot": "reports/figures\\mapping_proxy_metrics.png",
+    "similarity_histogram": "reports/figures\\similarity_histogram.png",
+    "tsne_scatter": "reports/figures\\tsne_scatter.png"
   }
 }

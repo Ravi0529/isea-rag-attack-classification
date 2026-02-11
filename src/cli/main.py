@@ -187,12 +187,20 @@ def eval_templates(
     ),
     out_dir: str = typer.Option(default="data/labels"),
     sample_rows: int = typer.Option(default=1000),
+    stratified: bool = typer.Option(
+        default=True, help="Stratify by predicted label and score buckets"
+    ),
+    score_bins: int = typer.Option(default=4, help="Number of quantile score buckets"),
+    random_seed: int = typer.Option(default=42),
 ):
     out = create_eval_templates(
         sessions_scored_path=sessions_scored_path,
         session_mapping_path=session_mapping_path,
         out_dir=out_dir,
         sample_rows=sample_rows,
+        stratified=stratified,
+        score_bins=score_bins,
+        random_seed=random_seed,
     )
     print(f"wrote detection labels template -> {out['detection_labels']}")
     print(f"wrote mapping labels template -> {out['mapping_labels']}")
