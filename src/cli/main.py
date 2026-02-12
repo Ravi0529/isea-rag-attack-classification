@@ -68,13 +68,24 @@ def detect(
         default="sentence-transformers/all-roberta-large-v1"
     ),
     use_lof: bool = typer.Option(default=False),
+    seed: int = typer.Option(default=42),
     device: str = typer.Option(default="auto"),
 ):
     s = pd.read_parquet(sessions_path)
+    if s.empty:
+        s["ml_score"] = pd.Series(dtype="float64")
+        s["rule_score"] = pd.Series(dtype="float64")
+        s["suspicious_score"] = pd.Series(dtype="float64")
+        s["label"] = pd.Series(dtype="string")
+        s["reasons"] = pd.Series(dtype="object")
+        s.to_parquet(out_path, index=False)
+        print(f"no sessions to score, wrote empty output -> {out_path}")
+        return
+
     s = apply_rules(s)
 
     X = embed_sessions(s, model_name=embed_model, device=device)
-    s["ml_score"] = lof_scores(X) if use_lof else isolation_forest_scores(X)
+    s["ml_score"] = lof_scores(X) if use_lof else isolation_forest_scores(X, seed=seed)
 
     s = combine_scores(s)
     s.to_parquet(out_path, index=False)

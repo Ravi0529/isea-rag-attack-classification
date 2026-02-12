@@ -4,6 +4,13 @@ import pandas as pd
 
 def combine_scores(df: pd.DataFrame, w_rule=0.65, w_ml=0.35) -> pd.DataFrame:
     out = df.copy()
+    if "ml_score" not in out.columns:
+        out["ml_score"] = 0.0
+    if "rule_score" not in out.columns:
+        out["rule_score"] = 0.0
+    if "rule_reasons" not in out.columns:
+        out["rule_reasons"] = [[] for _ in range(len(out))]
+
     out["ml_score"] = out["ml_score"].fillna(0.0).clip(0, 1)
     out["rule_score"] = out["rule_score"].fillna(0.0).clip(0, 1)
 
@@ -25,4 +32,5 @@ def combine_scores(df: pd.DataFrame, w_rule=0.65, w_ml=0.35) -> pd.DataFrame:
     out.loc[out["ml_score"] >= 0.80, "reasons"] = out.loc[
         out["ml_score"] >= 0.80, "reasons"
     ].apply(lambda r: r + ["ml_anomaly:high"])
+    out["reasons"] = out["reasons"].apply(lambda r: list(dict.fromkeys(r)))
     return out

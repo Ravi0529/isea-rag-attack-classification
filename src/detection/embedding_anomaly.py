@@ -1,22 +1,24 @@
 from __future__ import annotations
-import torch
+
 import numpy as np
 import pandas as pd
+import torch
 from sentence_transformers import SentenceTransformer
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 
 
 def _session_to_text(s: pd.DataFrame) -> list[str]:
-    # short “behavior summary” text per session
+    # Short behavior summary text per session for embedding.
+    ind_cols = [c for c in s.columns if c.startswith("ind_")]
     texts = []
     for _, r in s.iterrows():
+        ind_part = "; ".join(f"{c}={r.get(c, 0)}" for c in ind_cols)
         texts.append(
             f"tool={r.get('tool','')}; events={r.get('event_count',0)}; "
             f"duration_s={r.get('duration_s',0)}; rps={r.get('rps',0):.3f}; "
             f"unique_ports={r.get('unique_ports',0)}; indicator_hits={r.get('indicator_hits',0)}; "
-            f"etc_passwd={r.get('ind_lfi_etc_passwd',0)}; traversal={r.get('ind_path_traversal',0)}; "
-            f"sqli={r.get('ind_sql_injection',0)}; cmdi={r.get('ind_cmd_injection',0)}; wp={r.get('ind_wp_probe',0)}"
+            f"{ind_part}"
         )
     return texts
 
@@ -31,7 +33,7 @@ def _resolve_device(device: str = "auto") -> str:
             _ = torch.zeros(1).cuda()
             return "cuda"
         except Exception as e:
-            print(f"⚠️ CUDA available but unusable → CPU fallback ({e})")
+            print(f"CUDA available but unusable; falling back to CPU ({e})")
 
     return "cpu"
 
@@ -42,15 +44,17 @@ def embed_sessions(
     device: str = "auto",
 ) -> np.ndarray:
     resolved_device = _resolve_device(device)
-    print(f"🔧 Embedding device selected: {resolved_device}")
+    print(f"Embedding device selected: {resolved_device}")
 
     texts = _session_to_text(sessions)
+    if not texts:
+        return np.zeros((0, 0), dtype=np.float32)
 
     try:
         model = SentenceTransformer(model_name, device=resolved_device)
     except Exception as e:
-        print(f"❌ Failed to load model on {resolved_device}: {e}")
-        print("🔄 Falling back to CPU")
+        print(f"Failed to load model on {resolved_device}: {e}")
+        print("Falling back to CPU")
         model = SentenceTransformer(model_name, device="cpu")
 
     try:
@@ -62,7 +66,7 @@ def embed_sessions(
         )
     except RuntimeError as e:
         if "CUDA out of memory" in str(e):
-            print("⚠️ CUDA OOM → retrying on CPU with smaller batch")
+            print("CUDA OOM; retrying on CPU with smaller batch")
             torch.cuda.empty_cache()
             model.to("cpu")
             emb = model.encode(

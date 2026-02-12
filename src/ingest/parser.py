@@ -15,6 +15,17 @@ def _to_int(x: Any) -> Optional[int]:
         return None
 
 
+def _to_nullable_str(x: Any) -> Optional[str]:
+    if not isinstance(x, str):
+        return None
+    s = x.strip()
+    if not s:
+        return None
+    if s.lower() in {"null", "none", "nan", "na"}:
+        return None
+    return s
+
+
 def parse_line_to_event(line: str) -> Optional[Dict[str, Any]]:
     """
     Your lines look like JSON arrays, e.g. but the actual log file is in .log format
@@ -35,29 +46,31 @@ def parse_line_to_event(line: str) -> Optional[Dict[str, Any]]:
         return None
 
     # Expected positions based on your sample
-    action1 = arr[0] if len(arr) > 0 else None
-    action2 = arr[1] if len(arr) > 1 else None
-    ts = arr[2] if len(arr) > 2 else None
-    src_ip = arr[3] if len(arr) > 3 else None
-    src_port = _to_int(arr[4] if len(arr) > 4 else None)
-    ua = arr[5] if len(arr) > 5 else None
-    lang = arr[6] if len(arr) > 6 else None
-    extra = arr[7] if len(arr) > 7 else None
+    captured_cmd = _to_nullable_str(arr[0] if len(arr) > 0 else None)
+    captured_args = _to_nullable_str(arr[1] if len(arr) > 1 else None)
+    timestamp = _to_nullable_str(arr[2] if len(arr) > 2 else None)
+    source_ip = _to_nullable_str(arr[3] if len(arr) > 3 else None)
+    source_port = _to_int(arr[4] if len(arr) > 4 else None)
+    user_agent = _to_nullable_str(arr[5] if len(arr) > 5 else None)
+    language = _to_nullable_str(arr[6] if len(arr) > 6 else None)
+    x_forwarded_for_real_ip = _to_nullable_str(arr[7] if len(arr) > 7 else None)
 
-    # basic sanity on timestamp
-    if not isinstance(ts, str) or not _TS_RE.match(ts):
-        return None
+    # Keep only parseable timestamp format and normalize to ISO-like string.
+    if timestamp is not None:
+        if _TS_RE.match(timestamp):
+            timestamp = timestamp.replace(" ", "T") + "Z"
+        else:
+            timestamp = None
 
     return {
-        "ts": ts.replace(" ", "T") + "Z",  # ISO-like (Phase 1)
-        "src_ip": src_ip if isinstance(src_ip, str) else None,
-        "src_port": src_port,
-        "user_agent": ua if isinstance(ua, str) else None,
-        "lang": lang if isinstance(lang, str) else None,
-        "action1": action1 if isinstance(action1, str) else None,
-        "action2": action2 if isinstance(action2, str) else None,
-        "extra": extra if isinstance(extra, str) else None,
-        "raw_line": s,
+        "captured_cmd": captured_cmd,
+        "captured_args": captured_args,
+        "timestamp": timestamp,
+        "source_ip": source_ip,
+        "source_port": source_port,
+        "user_agent": user_agent,
+        "language": language,
+        "x_forwarded_for/real-ip": x_forwarded_for_real_ip,
     }
 
 
