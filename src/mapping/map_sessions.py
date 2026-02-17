@@ -1,5 +1,6 @@
 import pandas as pd
 from typing import Optional
+from tqdm import tqdm
 
 from src.rag.retrieve import search_attack_for_text
 from src.mapping.summary import session_to_summary
@@ -21,8 +22,9 @@ def map_sessions(
     if limit is not None:
         s = s.head(limit)
 
+    print(f"📊 Processing {len(s)} sessions...")
     mapped_rows = []
-    for _, row in s.iterrows():
+    for _, row in tqdm(s.iterrows(), total=len(s), desc="Mapping sessions", unit="session"):
         rowd = row.to_dict()
         summary = session_to_summary(rowd)
 
@@ -77,4 +79,5 @@ def map_sessions(
 
     out = pd.DataFrame(mapped_rows)
     out.to_parquet(out_path, index=False)
+    print(f"✅ Completed! Mapped {len(out)} sessions -> {out_path}")
     return out

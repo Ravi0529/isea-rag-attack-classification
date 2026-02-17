@@ -32,7 +32,7 @@ def load_embedder(
     except Exception as e:
         print(f"❌ Failed to load model on {dev}: {e}")
         print("🔄 Retrying on CPU...")
-        return SentenceTransformer(model_name, device="cpu")
+        return SentenceTransformer(model_name, device="cpu", local_files_only=True)
 
 
 def embed_texts(
