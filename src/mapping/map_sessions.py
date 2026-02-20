@@ -11,7 +11,7 @@ def map_sessions(
     sessions_path: str,
     out_path: str,
     top_k: int = 20,
-    embed_model: str = "sentence-transformers/all-roberta-large-v1",
+    embed_model: str = "BAAI/bge-large-en-v1.5",
     device: str = "auto",
     keep_top_n: int = 3,
     limit: Optional[int] = None,

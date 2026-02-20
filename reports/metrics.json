@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-02-17T06:03:52.513219+00:00",
+  "generated_at_utc": "2026-02-20T14:58:06.553264+00:00",
   "mode": "proxy",
   "inputs": {
     "sessions_scored_path": "data/processed/sessions_scored.parquet",
@@ -22,8 +22,8 @@
         0
       ],
       [
-        249,
-        27226,
+        321,
+        27154,
         558
       ],
       [
@@ -32,19 +32,19 @@
         1177
       ]
     ],
-    "macro_f1": 0.7568698898909986,
-    "weighted_f1": 0.9077112456905531,
+    "macro_f1": 0.7429614369313414,
+    "weighted_f1": 0.9058101440246591,
     "per_class": {
       "benign": {
-        "precision": 0.6963414634146341,
+        "precision": 0.6401345291479821,
         "recall": 1.0,
-        "f1": 0.8209920920201293,
+        "f1": 0.7805878332194122,
         "support": 571
       },
       "suspicious": {
-        "precision": 0.936856956057947,
-        "recall": 0.9712124995540969,
-        "f1": 0.9537254352471363,
+        "precision": 0.9367001276346201,
+        "recall": 0.968644098027325,
+        "f1": 0.9524043351688822,
         "support": 28033
       },
       "attack_like": {
@@ -61,23 +61,23 @@
   },
   "confidence": {
     "similarity_source_column": "confidence",
-    "mean_cosine_similarity": 0.5415120426796205,
-    "median_cosine_similarity": 0.5466814797857142,
-    "std_cosine_similarity": 0.032356962268094265
+    "mean_cosine_similarity": 0.6482357284458521,
+    "median_cosine_similarity": 0.6546161755357143,
+    "std_cosine_similarity": 0.02833177337730901
   },
   "utility": {
     "threshold": 0.7,
-    "n_mapped_sessions": 33125,
-    "n_mapped_sessions_above_threshold": 0,
-    "pct_mapped_sessions_above_threshold": 0.0,
-    "mapping_coverage_vs_scored_sessions": 0.6184883677508496
+    "n_mapped_sessions": 33080,
+    "n_mapped_sessions_above_threshold": 117,
+    "pct_mapped_sessions_above_threshold": 0.0035368802902055623,
+    "mapping_coverage_vs_scored_sessions": 0.617648157138056
   },
   "mapping": {
     "mode": "proxy",
-    "n_evaluated": 33125,
-    "tactic_alignment_top1": 0.0009962264150943396,
-    "tactic_alignment_top3": 0.0009962264150943396,
-    "avg_confidence": 0.5415120426796205,
+    "n_evaluated": 33080,
+    "tactic_alignment_top1": 0.014812575574365175,
+    "tactic_alignment_top3": 0.014812575574365175,
+    "avg_confidence": 0.6482357284458521,
     "notes": "Proxy mapping metrics are heuristic alignment, not true technique accuracy."
   },
   "artifacts": {
