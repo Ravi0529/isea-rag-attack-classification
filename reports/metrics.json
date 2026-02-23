@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-02-17T06:03:52.513219+00:00",
+  "generated_at_utc": "2026-02-23T14:47:34.582351+00:00",
   "mode": "proxy",
   "inputs": {
     "sessions_scored_path": "data/processed/sessions_scored.parquet",
@@ -22,35 +22,35 @@
         0
       ],
       [
-        249,
-        27226,
+        327,
+        27148,
         558
       ],
       [
         0,
-        1835,
-        1177
+        1834,
+        1178
       ]
     ],
-    "macro_f1": 0.7568698898909986,
-    "weighted_f1": 0.9077112456905531,
+    "macro_f1": 0.7419731056798077,
+    "weighted_f1": 0.9056998036357844,
     "per_class": {
       "benign": {
-        "precision": 0.6963414634146341,
+        "precision": 0.6358574610244989,
         "recall": 1.0,
-        "f1": 0.8209920920201293,
+        "f1": 0.7773995915588836,
         "support": 571
       },
       "suspicious": {
-        "precision": 0.936856956057947,
-        "recall": 0.9712124995540969,
-        "f1": 0.9537254352471363,
+        "precision": 0.9367193430405079,
+        "recall": 0.9684300645667606,
+        "f1": 0.9523107954047181,
         "support": 28033
       },
       "attack_like": {
-        "precision": 0.6783861671469741,
-        "recall": 0.39077025232403717,
-        "f1": 0.49589214240572993,
+        "precision": 0.6785714285714286,
+        "recall": 0.39110225763612216,
+        "f1": 0.4962089300758214,
         "support": 3012
       }
     },
@@ -61,23 +61,23 @@
   },
   "confidence": {
     "similarity_source_column": "confidence",
-    "mean_cosine_similarity": 0.5415120426796205,
-    "median_cosine_similarity": 0.5466814797857142,
-    "std_cosine_similarity": 0.032356962268094265
+    "mean_cosine_similarity": 0.4567320688094216,
+    "median_cosine_similarity": 0.4613676257857143,
+    "std_cosine_similarity": 0.022348642902851112
   },
   "utility": {
     "threshold": 0.7,
-    "n_mapped_sessions": 33125,
+    "n_mapped_sessions": 33088,
     "n_mapped_sessions_above_threshold": 0,
     "pct_mapped_sessions_above_threshold": 0.0,
-    "mapping_coverage_vs_scored_sessions": 0.6184883677508496
+    "mapping_coverage_vs_scored_sessions": 0.6177975279136637
   },
   "mapping": {
     "mode": "proxy",
-    "n_evaluated": 33125,
-    "tactic_alignment_top1": 0.0009962264150943396,
-    "tactic_alignment_top3": 0.0009962264150943396,
-    "avg_confidence": 0.5415120426796205,
+    "n_evaluated": 33088,
+    "tactic_alignment_top1": 0.05035058027079304,
+    "tactic_alignment_top3": 0.05035058027079304,
+    "avg_confidence": 0.4567320688094216,
     "notes": "Proxy mapping metrics are heuristic alignment, not true technique accuracy."
   },
   "artifacts": {

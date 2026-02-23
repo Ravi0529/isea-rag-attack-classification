@@ -20,7 +20,7 @@ def resolve_device(device: str = "auto") -> str:
 
 
 def load_embedder(
-    model_name: str = "sentence-transformers/all-roberta-large-v1",
+    model_name: str = "sentence-transformers/all-mpnet-base-v2",
     device: str = "auto",
 ) -> SentenceTransformer:
     dev = resolve_device(device)
